@@ -4,4 +4,15 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+<!--  <servlet>-->
+
+<!--    <servlet-name>ServletDemo</servlet-name>-->
+<!--    <servlet-class>ServletDemo</servlet-class>-->
+
+<!--    <init-param>-->
+<!--      <param-name>driver</param-name>-->
+<!--      <param-value>sun.jdbc.odbc.JdbcOdbcDriver</param-value>-->
+<!--    </init-param>-->
+<!--  </servlet>-->
+
 </web-app>

@@ -13,16 +13,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/demo")
-public class TestServlet  extends HttpServlet {
-    private List<Person> personList;
+@WebServlet("/persons")
+public class PersonServlet extends HttpServlet {
+    private List<Person> personList = new ArrayList<>();
 
     @Override
     public void init() {
         System.out.println("In INIT Method");
         personList = CustomUtils.createDummyList();
+//        ServletConfig config = getServletConfig();
+//        System.out.println(config.getInitParameter("driver"));
     }
 
     @Override
@@ -45,9 +48,10 @@ public class TestServlet  extends HttpServlet {
                 out.write(xml.getBytes());
                 out.flush();
             } else {
-                resp.setContentType("application/json");
+                //resp.setContentType("application/json");
+                resp.setHeader("ContentType", "application/json");
                 PrintWriter out = resp.getWriter();
-                out.println(gson.toJson(person));
+                out.write(gson.toJson(person));
                 out.close();
             }
         }else {
@@ -83,82 +87,12 @@ public class TestServlet  extends HttpServlet {
             out.println(status);
             out.close();
         } else{
+            resp.setContentType("text/plain");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             PrintWriter out = resp.getWriter();
-            out.println("Please try again later!");
+            out.write("Please try again later!");
             out.close();
         }
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String id = req.getParameter("id");
-        if (id != null && !id.equals("")){
-            String status = deleteById(Integer.parseInt(id), resp);
-            PrintWriter out = resp.getWriter();
-            out.println(status);
-            out.close();
-        }else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            PrintWriter out = resp.getWriter();
-            out.println("Please try again later!");
-            out.close();
-        }
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String name = req.getParameter("name");
-        String id = req.getParameter("id");
-
-        if (name != null  && id != null){
-            String status = updateById(Integer.parseInt(id), name, resp);
-            PrintWriter out = resp.getWriter();
-            out.println(status);
-            out.close();
-        }else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            PrintWriter out = resp.getWriter();
-            out.println("Please try again later!");
-            out.close();
-        }
-    }
-
-    @Override
-    public void destroy() {
-        this.personList.clear();
-        System.out.println("In DESTROY Method");
-    }
-
-    private Person getPersonById(int id){
-        for (Person person : personList){
-            if (person.getId() == id){
-                return person;
-            }
-        }
-        return null;
-    }
-
-    private String deleteById(int id, HttpServletResponse response){
-        for (Person person : personList){
-            if (person.getId() == id){
-                personList.remove(person);
-                return "Person Deleted";
-            }
-        }
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return "Person id not found";
-    }
-
-    private String updateById(int id, String name, HttpServletResponse response){
-        for (Person person : personList){
-            if (person.getId() == id){
-                person.setName(name);
-                return "Person name changed successfully";
-            }
-        }
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return "Person id not found";
     }
 
     private String addUser(int id, String name, HttpServletResponse response){
@@ -172,4 +106,14 @@ public class TestServlet  extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_CREATED);
         return "Person successfully added.";
     }
+
+    private Person getPersonById(int id){
+        for (Person person : personList){
+            if (person.getId() == id){
+                return person;
+            }
+        }
+        return null;
+    }
+
 }
